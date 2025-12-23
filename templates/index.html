@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akademik Mazeret Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f6f9; --card-bg: white; --text-color: #333;
+            --primary: #3498db; --header-bg: #2c3e50; --border-color: #e9ecef;
+        }
+        /* HACKER MODE VARIABLES */
+        [data-theme="hacker"] {
+            --bg-color: #000000; --card-bg: #111111; --text-color: #0f0;
+            --primary: #00ff00; --header-bg: #003300; --border-color: #004400;
+        }
+        
+        body { background-color: var(--bg-color); font-family: 'Roboto', sans-serif; color: var(--text-color); transition: 0.3s; }
+        [data-theme="hacker"] body { font-family: 'Share Tech Mono', monospace; }
+        
+        .main-card { border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); background: var(--card-bg); margin-bottom: 25px; }
+        .header-section { background-color: var(--header-bg); color: white; padding: 25px; border-radius: 12px 12px 0 0; }
+        
+        .btn-primary { background-color: var(--primary); border: none; padding: 10px 20px; color: white; font-weight: bold; }
+        .btn-primary:hover { opacity: 0.8; }
+        [data-theme="hacker"] .btn-primary { background-color: black; border: 1px solid #0f0; color: #0f0; box-shadow: 0 0 10px #0f0; }
+        
+        .form-control, .form-select { background-color: var(--card-bg); color: var(--text-color); border: 1px solid #ccc; }
+        [data-theme="hacker"] .form-control, [data-theme="hacker"] .form-select { background-color: #000; border: 1px solid #0f0; color: #0f0; }
+        
+        /* İMZA KUTUSU */
+        #signature-pad { border: 2px dashed #ccc; border-radius: 5px; cursor: crosshair; background: white; touch-action: none; width: 100%; height: 150px; }
+        /* EKLENECEK KISIM */
+[data-theme="hacker"] #signature-pad { 
+    background: #ffffff !important; /* Arka plan hep beyaz kalsın */
+    border: 2px solid #00ff00;      /* Çerçeve Matrix Yeşili */
+    box-shadow: 0 0 15px #00ff00;   /* Neon Parlama Efekti */
+}
+        
+        .theme-switch { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    </style>
+</head>
+<body>
+
+<button class="btn btn-dark theme-switch" onclick="toggleTheme()">🌙 / 💻</button>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            
+            <div class="card main-card">
+                <div class="card-header border-bottom-0 pt-4 px-4" style="background: var(--card-bg);">
+                    <h5 class="mb-0" style="color: var(--primary)">📊 Analitik Panel</h5>
+                </div>
+                <div class="card-body px-4 pb-4">
+                    <div class="row">
+                        <div class="col-md-6"><canvas id="kategoriChart" style="max-height: 200px;"></canvas></div>
+                        <div class="col-md-6"><canvas id="dersChart" style="max-height: 200px;"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card main-card">
+                <div class="header-section">
+                    <h4 class="mb-1">🎓 Akademik Mazeret v6.0</h4>
+                    <small class="opacity-75">Ultimate Edition: İmza & Hacker Modu</small>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" id="mazeretForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6"><input type="text" name="ogrenciAd" id="ogrenciAd" class="form-control" placeholder="Ad Soyad" required></div>
+                            <div class="col-md-6"><input type="date" name="tarih" class="form-control" required></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6"><input type="text" name="ders" class="form-control" placeholder="Ders" required></div>
+                            <div class="col-md-6"><input type="text" name="hoca" class="form-control" placeholder="Hoca" required></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <select name="dil" class="form-select">
+                                    <option value="tr">🇹🇷 Türkçe</option>
+                                    <option value="en">🇬🇧 İngilizce</option>
+                                    <option value="de">🇩🇪 Almanca</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <select name="tarz" class="form-select">
+                                    <option value="formal">👔 Resmi</option>
+                                    <option value="informal">👋 Samimi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <select name="kategori" class="form-select">
+                                    <option value="teknik">💻 Teknik</option>
+                                    <option value="saglik">🏥 Sağlık</option>
+                                    <option value="aile">🏠 Aile</option>
+                                    <option value="ulasim">🚌 Ulaşım</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <select name="ciddiyet" class="form-select">
+                                    <option value="1">🟢 Hafif</option>
+                                    <option value="3">🟡 Orta</option>
+                                    <option value="5">🔴 Felaket</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold">✍️ ISLAK İMZA (PDF'e eklenir)</label>
+                            <canvas id="signature-pad"></canvas>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSignature()">Temizle</button>
+                            </div>
+                            <input type="hidden" name="imzaVerisi" id="imzaVerisi">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 rounded-3" onclick="prepareSignature()">✨ OLUŞTUR</button>
+                    </form>
+
+                    {% if mail %}
+                    <div class="mt-4 p-4 rounded border" style="background-color: rgba(0,0,0,0.05);">
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold text-uppercase">AI Skoru:</label>
+                            <div class="progress mt-1">
+                                <div class="progress-bar bg-{{ skor_renk }}" style="width: {{ skor }}%">%{{ skor }}</div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6 class="fw-bold" style="color: var(--primary)">Taslak</h6>
+                            <div>
+                                <button onclick="copyText()" class="btn btn-sm btn-outline-secondary me-1">Kopyala</button>
+                                <a href="/indir-pdf" class="btn btn-sm btn-danger text-white">📄 İmzalı PDF İndir</a>
+                            </div>
+                        </div>
+                        <div class="p-3 border rounded" style="background: var(--card-bg);">
+                            <strong>Konu:</strong> <span id="mailSubject">{{ mail.konu }}</span><br><br>
+                            <span id="mailBody" style="white-space: pre-wrap;">{{ mail.icerik }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card main-card">
+                <div class="card-header border-bottom-0 pt-4 px-4 d-flex justify-content-between align-items-center" style="background: var(--card-bg);">
+                    <h5 class="mb-0">🕒 Geçmiş</h5>
+                    <a href="/indir-excel" class="btn btn-sm btn-success">📥 Excel</a>
+                </div>
+                <div class="card-body px-4 pb-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle" style="color: var(--text-color);">
+                            <thead><tr><th>Tarih</th><th>Ders</th><th>Kategori</th><th>İşlem</th></tr></thead>
+                            <tbody>
+                                {% for kayit in gecmis %}
+                                <tr>
+                                    <td>{{ kayit[1] }}</td>
+                                    <td><strong>{{ kayit[2] }}</strong></td>
+                                    <td><span class="badge badge-tech">{{ kayit[4] }}</span></td>
+                                    <td><button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#mailModal" data-ders="{{ kayit[2] }}" data-icerik="{{ kayit[6] }}">Oku</button></td>
+                                </tr>
+                                {% else %}<tr><td colspan="4" class="text-center">Kayıt yok.</td></tr>{% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mailModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content" style="background: var(--card-bg); color: var(--text-color);"><div class="modal-header"><h5 class="modal-title">Detay</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><pre style="color: var(--text-color);"></pre></div></div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // İsim Hafıza
+    window.onload = function() { if(localStorage.getItem("ogrenciAd")) document.getElementById("ogrenciAd").value = localStorage.getItem("ogrenciAd"); }
+    document.getElementById("ogrenciAd").addEventListener("input", function() { localStorage.setItem("ogrenciAd", this.value); });
+
+    // HACKER MODU
+    function toggleTheme() {
+        if(document.documentElement.getAttribute('data-theme') === 'hacker') {
+            document.documentElement.removeAttribute('data-theme');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'hacker');
+            var audio = new Audio('https://www.soundjay.com/button/beep-07.mp3'); // Basit bip sesi
+            audio.play();
+        }
+    }
+
+    // İMZA ALANI (Canvas Logic)
+    var canvas = document.getElementById('signature-pad');
+    var ctx = canvas.getContext('2d');
+    var isDrawing = false;
+
+    // Canvas boyutunu ayarla
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    ctx.strokeStyle = "#000000"; // Siyah kalem
+    ctx.lineWidth = 2;
+
+    function startDraw(e) { isDrawing = true; draw(e); }
+    function endDraw() { isDrawing = false; ctx.beginPath(); }
+    function draw(e) {
+        if (!isDrawing) return;
+        var rect = canvas.getBoundingClientRect();
+        var x = (e.clientX || e.touches[0].clientX) - rect.left;
+        var y = (e.clientY || e.touches[0].clientY) - rect.top;
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mousemove', draw);
+    // Mobil desteği
+    canvas.addEventListener('touchstart', function(e){e.preventDefault(); startDraw(e)}, {passive: false});
+    canvas.addEventListener('touchend', function(e){e.preventDefault(); endDraw(e)});
+    canvas.addEventListener('touchmove', function(e){e.preventDefault(); draw(e)}, {passive: false});
+
+    function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    
+    function prepareSignature() {
+        var dataURL = canvas.toDataURL("image/png");
+        document.getElementById('imzaVerisi').value = dataURL;
+    }
+
+    // Modal
+    var mailModal = document.getElementById('mailModal');
+    mailModal.addEventListener('show.bs.modal', function (event) {
+      var btn = event.relatedTarget;
+      mailModal.querySelector('.modal-title').textContent = btn.getAttribute('data-ders');
+      mailModal.querySelector('.modal-body pre').textContent = btn.getAttribute('data-icerik');
+    });
+
+    // Grafikler
+    var kData = {{ kategori_stats | tojson }}; var dData = {{ ders_stats | tojson }};
+    new Chart(document.getElementById('kategoriChart'), { type: 'doughnut', data: { labels: Object.keys(kData), datasets: [{ data: Object.values(kData), backgroundColor: ['#e74c3c','#3498db','#f1c40f','#2ecc71'] }] } });
+    new Chart(document.getElementById('dersChart'), { type: 'bar', data: { labels: Object.keys(dData), datasets: [{ label: 'Adet', data: Object.values(dData), backgroundColor: '#2c3e50' }] } });
+</script>
+</body>
+</html>
